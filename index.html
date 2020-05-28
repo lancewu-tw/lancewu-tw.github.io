@@ -168,6 +168,86 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-tw">
+    <link itemprop="mainEntityOfPage" href="https://lancewu-tw.github.io/2020/05/28/App-Icon-Generator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar_2019.png">
+      <meta itemprop="name" content="Lance Wu">
+      <meta itemprop="description" content="Software Programmer<br/>APP Developer<br/>Learning to be a Software Designer.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lance Wu&#39;s Notes">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/28/App-Icon-Generator/" class="post-title-link" itemprop="url">App Icon Generator</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-05-28 13:01:22 / Modified: 13:36:52" itemprop="dateCreated datePublished" datetime="2020-05-28T13:01:22+08:00">2020-05-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%8D%E8%B2%BB%E8%B3%87%E6%BA%90/" itemprop="url" rel="index"><span itemprop="name">免費資源</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>網址: <a href="https://appicon.co/" target="_blank" rel="noopener">https://appicon.co/</a></p>
+<p>這是從 <a href="https://www.udemy.com/course/flutter-bootcamp-with-dart/" target="_blank" rel="noopener">Complete Flutter App Development Bootcamp with Dart</a> 這門課裡看到的, 一個可以免費幫忙轉換 icon 圖的網站<br>只要上傳一張圖, 就可以幫你轉換成 iphone 和 android 等裝置所需要的 icon 圖<br>(其實就是把原始圖案縮小成不同的 size 來因應不同裝置所需的 icon 圖)</p>
+<p><img src="https://res.cloudinary.com/lancewu/image/upload/v1590642696/appicon_cvyd7f.png" alt="appicon.co"></p>
+<p>因為我的是 android app, 所以就只需要 android 的 icon 圖, 按 Generate 後會下載一個 AppIcons.zip, 裡頭有很多目錄, 主要的是 android 目錄下的各個 dpi 目錄, 裡面就是放不同 dpi 裝置所需的 icon 圖<br>appstore.png 和 playstore.png 則是要上架 Google Play Store 所需要的圖檔, 不一定要用這裡產生的</p>
+<p><img src="https://res.cloudinary.com/lancewu/image/upload/v1590643141/appicon_dir_yjwnnu.png" alt="appicon dir"></p>
+<p>照課程裡的做法, 是要把這些 dpi 目錄 copy 到 android 程式專案目錄下的特定位置, 但我用的是 Cordova, 所以只要修改目錄下的 config.xml, 在 android 的 tag 內加上以下的 icon 程式碼再編譯就可以了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;platform name&#x3D;&quot;android&quot;&gt;</span><br><span class="line">    &lt;allow-intent href&#x3D;&quot;market:*&quot; &#x2F;&gt;</span><br><span class="line">    &lt;icon src&#x3D;&quot;AppIcons&#x2F;android&#x2F;mipmap-hdpi&#x2F;ic_launcher.png&quot; density&#x3D;&quot;hdpi&quot; &#x2F;&gt;</span><br><span class="line">    &lt;icon src&#x3D;&quot;AppIcons&#x2F;android&#x2F;mipmap-mdpi&#x2F;ic_launcher.png&quot; density&#x3D;&quot;mdpi&quot; &#x2F;&gt;</span><br><span class="line">    &lt;icon src&#x3D;&quot;AppIcons&#x2F;android&#x2F;mipmap-xhdpi&#x2F;ic_launcher.png&quot; density&#x3D;&quot;xhdpi&quot; &#x2F;&gt;</span><br><span class="line">    &lt;icon src&#x3D;&quot;AppIcons&#x2F;android&#x2F;mipmap-xxhdpi&#x2F;ic_launcher.png&quot; density&#x3D;&quot;xxhdpi&quot; &#x2F;&gt;</span><br><span class="line">    &lt;icon src&#x3D;&quot;AppIcons&#x2F;android&#x2F;mipmap-xxxhdpi&#x2F;ic_launcher.png&quot; density&#x3D;&quot;xxxhdpi&quot; &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;platform&gt;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-tw">
     <link itemprop="mainEntityOfPage" href="https://lancewu-tw.github.io/2020/05/25/%E6%B8%85%E6%9D%BE%E6%89%8B%E5%AF%AB%E5%AD%97%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -468,7 +548,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
