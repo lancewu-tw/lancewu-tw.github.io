@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lancewu-tw.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="實作直接從臺灣銀行網頁抓取資料來更新資料庫。這部份分成二個 method 來做, 一個是抓取指定日期的資料, 一個是抓取指定範圍日期的資料。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python練習題: GoldPassbook (五) update from web">
+<meta property="og:url" content="https://lancewu-tw.github.io/2020/06/15/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E4%BA%94-update-from-web/index.html">
+<meta property="og:site_name" content="Lance Wu&#39;s Notes">
+<meta property="og:description" content="實作直接從臺灣銀行網頁抓取資料來更新資料庫。這部份分成二個 method 來做, 一個是抓取指定日期的資料, 一個是抓取指定範圍日期的資料。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-06-15T04:28:52.000Z">
+<meta property="article:modified_time" content="2020-06-15T08:37:22.454Z">
+<meta property="article:author" content="Lance Wu">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lancewu-tw.github.io/2020/06/15/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E4%BA%94-update-from-web/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-tw'
+  };
+</script>
+
+  <title>python練習題: GoldPassbook (五) update from web | Lance Wu&#39;s Notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lance Wu&#39;s Notes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Programmer<br/>Developer<br/>Designer</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-portfolio">
+
+    <a href="/portfolio/" rel="section"><i class="fa fa-book fa-fw"></i>Portfolio</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-tw">
+    <link itemprop="mainEntityOfPage" href="https://lancewu-tw.github.io/2020/06/15/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E4%BA%94-update-from-web/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar_2019.png">
+      <meta itemprop="name" content="Lance Wu">
+      <meta itemprop="description" content="Software Programmer<br/>APP Developer<br/>Learning to be a Software Designer.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lance Wu&#39;s Notes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python練習題: GoldPassbook (五) update from web
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-06-15 12:28:52 / Modified: 16:37:22" itemprop="dateCreated datePublished" datetime="2020-06-15T12:28:52+08:00">2020-06-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python%E7%B7%B4%E7%BF%92%E9%A1%8C/" itemprop="url" rel="index"><span itemprop="name">python練習題</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>實作直接從臺灣銀行網頁抓取資料來更新資料庫。<br>這部份分成二個 method 來做, 一個是抓取指定日期的資料, 一個是抓取指定範圍日期的資料。</p>
+<a id="more"></a>
+
+<p>分成二個 method 的目的, 是為了共用同一個資料爬蟲的程式 (抓取指定日期)<br>抓取指定範圍時只要將日期依序丟給爬蟲程式去執行就可以了(一次一天, 然後 loop 整個範圍的日期)</p>
+<h4 id="抓取指定日期資料"><a href="#抓取指定日期資料" class="headerlink" title="抓取指定日期資料"></a>抓取指定日期資料</h4><p>宣告一個 method 來抓取指定日期的資料</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_from_web</span><span class="params">(self, date)</span>:</span></span><br><span class="line">    <span class="string">'''</span></span><br><span class="line"><span class="string">    Update data from web</span></span><br><span class="line"><span class="string">    It will return data and add to self.__df too.</span></span><br><span class="line"><span class="string">    return : object &#123; 'Date', 'Buy Cost', 'Sell Cost'&#125;</span></span><br><span class="line"><span class="string">    '''</span></span><br></pre></td></tr></table></figure>
+<p>確認 date 那天是不是星期六或日, 是的話表示沒資料, 直接跳過</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">retdata = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> isinstance( date, datetime.date):</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 如果這天是星期六或星期日, 表示沒有資料, 直接跳過不處理</span></span><br><span class="line">    <span class="keyword">if</span> date.weekday() == <span class="number">5</span> <span class="keyword">or</span> date.weekday() == <span class="number">6</span>:</span><br><span class="line">        print(<span class="string">'It is holiday, bypass'</span>)</span><br><span class="line">        <span class="keyword">return</span> retdata</span><br></pre></td></tr></table></figure>
+<p>臺灣銀行網址的格式是 <code>https://rate.bot.com.tw/gold/chart/YYYY-MM-DD/TWD/</code><br>它會依據日期不同傳回該天的歷史資料 (但要一年內的日期才有效)<br>所以要依照 date 的設定來產生特定的網址</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 抓取臺灣銀行的每日資料</span></span><br><span class="line">day_string = date.strftime(<span class="string">'%Y-%m-%d'</span>)</span><br><span class="line">url_string = <span class="string">'https://rate.bot.com.tw/gold/chart/%s/TWD/'</span> % day_string</span><br></pre></td></tr></table></figure>
+<p>使用<code>request</code>來讀取網頁資料, 如果<code>status_code</code>是<code>200</code>的話表示 server 有回傳網頁資料 (HTML 格式)<br>使用 pandas 的 <code>read_html</code> method, 它可以直接將 HTML 格式裡的所有 table 資料轉成 DataFrame 資料格式的 list<br>因為我們需要的資料在第一個 table, 所以就是 df_list[0] 的內容</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">res = requests.get( url_string)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> res.status_code == <span class="number">200</span>:</span><br><span class="line">    </span><br><span class="line">    df_list = pd.read_html( res.text)</span><br><span class="line">    data_df = df_list[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p>得到 DateFrame 資料後就跟處理 CSV 資料一樣了…(換 column name, 將資料加入 <code>self.__df</code>)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 將 column 換成英文名</span></span><br><span class="line">data_df.columns = [ <span class="string">'Time'</span>, <span class="string">'Currency'</span>, <span class="string">'Weight'</span>, <span class="string">'Buy Cost'</span>, <span class="string">'Sell Cost'</span>]</span><br></pre></td></tr></table></figure>
+<p>如果那天沒有資料(如例假日), 則網頁上會顯示一行 “很抱歉，本次查詢找不到任何一筆資料！”<br>所以利用判斷 “Buy Cost” 欄位內容是不是數字來判斷當天有沒有資料</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 如果 But Cost 欄位是字串, 表示沒有資料</span></span><br><span class="line"><span class="keyword">if</span> type(data_df[<span class="string">'Buy Cost'</span>].iloc[<span class="number">0</span>]) == str:</span><br><span class="line">    print(<span class="string">'No Data'</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br></pre></td></tr></table></figure>
+<p>每日資料的欄位裡第一欄是 Time 不是 Date, 所以要先加一欄 Date 進去, 才會符合我們要使用的 DateFrame 格式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Add Date</span></span><br><span class="line">data_df[<span class="string">'Date'</span>] = date.strftime(<span class="string">'%Y%m%d'</span>)</span><br><span class="line"><span class="comment"># 刪掉 Time, Currency 和 'Weight'</span></span><br><span class="line">data_df = data_df.drop( [<span class="string">'Time'</span>, <span class="string">'Currency'</span>, <span class="string">'Weight'</span>], axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 將內容轉成數字</span></span><br><span class="line"><span class="comment"># errors='coerce' 表示無法轉換成數字的就設成 NaN</span></span><br><span class="line">data_df = data_df.apply( <span class="keyword">lambda</span> s: pd.to_numeric( s, errors=<span class="string">'coerce'</span>))</span><br><span class="line"><span class="comment"># 將整欄都不是數字的欄位刪掉</span></span><br><span class="line"><span class="comment"># data_df.isnull().sum() : 計算該欄是 null 的數量, 如果不等於欄位的長度 len(data_df) 則表示該欄有數字</span></span><br><span class="line"><span class="comment"># data_df.columns[] : 選取直欄</span></span><br><span class="line">data_df = data_df[ data_df.columns[ data_df.isnull().sum() != len( data_df)]]</span><br><span class="line">    </span><br><span class="line"><span class="comment"># set index to 'Date'</span></span><br><span class="line">data_df = data_df.set_index(<span class="string">'Date'</span>)</span><br></pre></td></tr></table></figure>
+<p>因為當天的資料是每一個小時左右更新一次, 所以我們固定抓最後一筆資料存入<code>self.__df</code>裡<br>最後一筆資料就是 <code>data_df.iloc[-1]</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">            <span class="comment"># update to self.__df</span></span><br><span class="line">            <span class="comment"># 用 isinstance 判斷 __df 是不是 DataFrame 的型態</span></span><br><span class="line">            <span class="keyword">if</span> isinstance( self.__df, pd.DataFrame):</span><br><span class="line">                print( <span class="string">'Buy Cost: %d, Sell Cost: %d'</span> % (data_df.iloc[<span class="number">-1</span>][<span class="string">'Buy Cost'</span>], data_df.iloc[<span class="number">-1</span>][<span class="string">'Sell Cost'</span>]))</span><br><span class="line">                </span><br><span class="line">                <span class="comment"># 取得 date_index (如 20200601)</span></span><br><span class="line">                <span class="comment"># 檢查 data_index 有沒有在 self.__df 裡</span></span><br><span class="line">                <span class="comment"># 有則更新它的資料, 沒有則 append 一筆新的資料</span></span><br><span class="line">                date_index = pd.to_numeric( date.strftime(<span class="string">'%Y%m%d'</span>), errors=<span class="string">'coerce'</span>)</span><br><span class="line">                <span class="keyword">if</span> date_index <span class="keyword">in</span> self.__df.index:</span><br><span class="line">                    self.__df.loc[date_index] = data_df.iloc[<span class="number">-1</span>]</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    self.__df = self.__df.append( data_df.iloc[<span class="number">-1</span>])</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                data_df = data_df.reset_index()</span><br><span class="line">                self.__df = pd.DataFrame( data_df.iloc[<span class="number">-1</span>])</span><br><span class="line">                self.__df = self.__df.set_index(<span class="string">'Date'</span>)</span><br><span class="line">                    </span><br><span class="line">            <span class="keyword">return</span> data_df.iloc[<span class="number">-1</span>]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(<span class="string">'ERR Code %d'</span> % res.status_code)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">return</span> retdata</span><br></pre></td></tr></table></figure>
+
+<h4 id="處理範圍日期資料"><a href="#處理範圍日期資料" class="headerlink" title="處理範圍日期資料"></a>處理範圍日期資料</h4><p>有了從網頁更新特定日期資料的 method 後, 再來就是讓它 loop 處理範圍日期的 method<br>因為要利用 <code>rrule.rrule</code> 取得 start_date 到 end_date 的所有日期<br>所以要先 import rrule</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> dateutil <span class="keyword">import</span> rrule</span><br></pre></td></tr></table></figure>
+<p>使用 <code>rrule.DAILY</code> 會傳回 dtstart 到 until 的所有日期的物件, 然後用 <code>dt.date()</code> 得到日期的字串, 存成一個 list</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_range</span><span class="params">(self, start_date, end_date)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 取得從 start_date 到 end_date 的所有日期</span></span><br><span class="line">    day_list = [dt.date() <span class="keyword">for</span> dt <span class="keyword">in</span> rrule.rrule(rrule.DAILY, dtstart=start_date, until=end_date)]</span><br><span class="line">    <span class="comment">#print( day_list)</span></span><br></pre></td></tr></table></figure>
+<p>然後再依照 list 內容呼叫 <code>update_from_web</code> 取得每一天的資料並存入 <code>self.__df</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">count = <span class="number">0</span></span><br><span class="line"><span class="comment"># 依序抓取每一日的資料</span></span><br><span class="line"><span class="keyword">for</span> day <span class="keyword">in</span> day_list:</span><br><span class="line">    <span class="keyword">if</span> isinstance( self.update_from_web( day), pd.Series) != <span class="literal">None</span>:</span><br><span class="line">        count += <span class="number">1</span></span><br><span class="line">    <span class="comment"># 暫停 1 秒, 避免程式執行太快被 server 阻擋</span></span><br><span class="line">    time.sleep(<span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> count != <span class="number">0</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="自動更新"><a href="#自動更新" class="headerlink" title="自動更新"></a>自動更新</h4><p>先將 MongoDB 的資料讀出, 然後抓取最新一筆資料的日期, 如果最新一筆的日期不是執行當日的日期, 則呼叫 <code>update_range</code> 做更新, 這樣就可以做到自動更新的功能</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># 取得今天的時間</span></span><br><span class="line">    today_date = datetime.datetime.today()</span><br><span class="line">    <span class="comment"># 取得最後一筆資料的日期</span></span><br><span class="line">    last_date = datetime.datetime.strptime( self.__df.index[<span class="number">-1</span>].astype(str), <span class="string">'%Y%m%d'</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 如果今天還沒到下午四點表示資料仍會變動, 所以暫時不抓取資料</span></span><br><span class="line">    <span class="keyword">if</span> today_date.hour &lt; <span class="number">16</span>:</span><br><span class="line">        print(<span class="string">'Today does not close yet, ignore today...'</span>)</span><br><span class="line">        <span class="comment"># 將 today 改成昨天</span></span><br><span class="line">        today_date = today_date + datetime.timedelta(days = <span class="number">-1</span>)</span><br><span class="line">        </span><br><span class="line">    ret = <span class="literal">False</span></span><br><span class="line">    <span class="comment"># 如果日期有更新, 則更新資料</span></span><br><span class="line">    <span class="keyword">if</span> today_date.date() != last_date.date():</span><br><span class="line">        ret = self.update_range( last_date, today_date)</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/10/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E5%9B%9B-load-db-save-db/" rel="prev" title="python練習題: GoldPassbook (四) load_db, save_db">
+      <i class="fa fa-chevron-left"></i> python練習題: GoldPassbook (四) load_db, save_db
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#抓取指定日期資料"><span class="nav-number">1.</span> <span class="nav-text">抓取指定日期資料</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#處理範圍日期資料"><span class="nav-number">2.</span> <span class="nav-text">處理範圍日期資料</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自動更新"><span class="nav-number">3.</span> <span class="nav-text">自動更新</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lance Wu"
+      src="/images/avatar_2019.png">
+  <p class="site-author-name" itemprop="name">Lance Wu</p>
+  <div class="site-description" itemprop="description">Software Programmer<br/>APP Developer<br/>Learning to be a Software Designer.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lance Wu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+  <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-firestore.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey   : 'AIzaSyBdpH9Pd-2z2LkH42grqvYnE99f-SBbDlA',
+      projectId: 'lancewu-tw-github-io'
+    });
+
+    function getCount(doc, increaseCount) {
+      // IncreaseCount will be false when not in article page
+      return doc.get().then(d => {
+        var count = 0;
+        if (!d.exists) { // Has no data, initialize count
+          if (increaseCount) {
+            doc.set({
+              count: 1
+            });
+            count = 1;
+          }
+        } else { // Has data
+          count = d.data().count;
+          if (increaseCount) {
+            // If first view this article
+            doc.set({ // Increase count
+              count: count + 1
+            });
+            count++;
+          }
+        }
+
+        return count;
+      });
+    }
+
+    function appendCountTo(el) {
+      return count => {
+        el.innerText = count;
+      }
+    }
+  </script>
+  <script>
+    (function() {
+      var db = firebase.firestore();
+      var articles = db.collection('articles');
+
+      if (CONFIG.page.isPost) { // Is article page
+        var title = document.querySelector('.post-title').innerText.trim();
+        var doc = articles.doc(title);
+        var increaseCount = CONFIG.hostname === location.hostname;
+        if (localStorage.getItem(title)) {
+          increaseCount = false;
+        } else {
+          // Mark as visited
+          localStorage.setItem(title, true);
+        }
+        getCount(doc, increaseCount).then(appendCountTo(document.querySelector('.firestore-visitors-count')));
+      } else if (CONFIG.page.isHome) { // Is index page
+        var promises = [...document.querySelectorAll('.post-title')].map(element => {
+          var title = element.innerText.trim();
+          var doc = articles.doc(title);
+          return getCount(doc);
+        });
+        Promise.all(promises).then(counts => {
+          var metas = document.querySelectorAll('.firestore-visitors-count');
+          counts.forEach((val, idx) => {
+            appendCountTo(metas[idx])(val);
+          });
+        });
+      }
+    })();
+  </script>
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'd14cfe64d75d1f82483a',
+      clientSecret: '389259e561cd2c75f024b501909a72003e4bc99b',
+      repo        : 'lancewu-tw.github.io',
+      owner       : 'lancewu-tw',
+      admin       : ['lancewu-tw'],
+      id          : '1e34b765f4e8800934ab9950cbb3f2ed',
+        language: 'zh-TW',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
