@@ -20,22 +20,20 @@
     var CONFIG = {"hostname":"lancewu-tw.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="功能大致完成, 就寫個簡單的程式來測試一下…">
+  <meta name="description" content="新增一個取得當下價格的 method">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python練習題: GoldPassbook (六) 測試">
-<meta property="og:url" content="https://lancewu-tw.github.io/2020/06/22/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E5%85%AD-%E6%B8%AC%E8%A9%A6/index.html">
+<meta property="og:title" content="python練習題: GoldPassbook (七) Get current cost">
+<meta property="og:url" content="https://lancewu-tw.github.io/2020/06/30/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E4%B8%83-Get-current-cost/index.html">
 <meta property="og:site_name" content="Lance Wu&#39;s Notes">
-<meta property="og:description" content="功能大致完成, 就寫個簡單的程式來測試一下…">
+<meta property="og:description" content="新增一個取得當下價格的 method">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://res.cloudinary.com/lancewu/image/upload/v1592815363/GoldPassbook/20200622_goldpassbook_losueq.png">
-<meta property="article:published_time" content="2020-06-22T08:21:01.000Z">
-<meta property="article:modified_time" content="2020-06-22T08:46:23.610Z">
+<meta property="article:published_time" content="2020-06-30T01:41:48.000Z">
+<meta property="article:modified_time" content="2020-06-30T01:50:34.793Z">
 <meta property="article:author" content="Lance Wu">
 <meta property="article:tag" content="python">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://res.cloudinary.com/lancewu/image/upload/v1592815363/GoldPassbook/20200622_goldpassbook_losueq.png">
 
-<link rel="canonical" href="https://lancewu-tw.github.io/2020/06/22/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E5%85%AD-%E6%B8%AC%E8%A9%A6/">
+<link rel="canonical" href="https://lancewu-tw.github.io/2020/06/30/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E4%B8%83-Get-current-cost/">
 
 
 <script id="page-configurations">
@@ -48,7 +46,7 @@
   };
 </script>
 
-  <title>python練習題: GoldPassbook (六) 測試 | Lance Wu&#39;s Notes</title>
+  <title>python練習題: GoldPassbook (七) Get current cost | Lance Wu&#39;s Notes</title>
   
 
 
@@ -174,7 +172,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-tw">
-    <link itemprop="mainEntityOfPage" href="https://lancewu-tw.github.io/2020/06/22/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E5%85%AD-%E6%B8%AC%E8%A9%A6/">
+    <link itemprop="mainEntityOfPage" href="https://lancewu-tw.github.io/2020/06/30/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E4%B8%83-Get-current-cost/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar_2019.png">
@@ -187,7 +185,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          python練習題: GoldPassbook (六) 測試
+          python練習題: GoldPassbook (七) Get current cost
         </h1>
 
         <div class="post-meta">
@@ -198,7 +196,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-06-22 16:21:01 / Modified: 16:46:23" itemprop="dateCreated datePublished" datetime="2020-06-22T16:21:01+08:00">2020-06-22</time>
+              <time title="Created: 2020-06-30 09:41:48 / Modified: 09:50:34" itemprop="dateCreated datePublished" datetime="2020-06-30T09:41:48+08:00">2020-06-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -228,24 +226,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>功能大致完成, 就寫個簡單的程式來測試一下…</p>
+        <p>新增一個取得當下價格的 method</p>
 <a id="more"></a>
 
-<p>首先 import class</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> gold_passbook <span class="keyword">import</span> GoldPassbook</span><br></pre></td></tr></table></figure>
-<p>然後宣告一個 GoldPassbook 類別的變數 GP, 並帶入 MongoDB 的參數。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">today = datetime.datetime.today().strftime(<span class="string">'%Y%m%d'</span>)</span><br><span class="line">print(<span class="string">'today is %s'</span> % today)</span><br><span class="line"></span><br><span class="line">GP = GoldPassbook( &#123; <span class="string">'db_name'</span>:<span class="string">'rich_system'</span>, <span class="string">'username'</span>:<span class="string">'USERNAME'</span>, <span class="string">'password'</span>:<span class="string">'PASSWORD'</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>處理流程為: 確認資料庫內有沒有今日資料, 有則直接回傳資料庫內的資料, 沒有則抓取臺銀網頁資料</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_current_cost</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="string">'''</span></span><br><span class="line"><span class="string">    Get current cost</span></span><br><span class="line"><span class="string">    return a dict with data &#123;Buy Cost", "Sell Cost"&#125;</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    retval = <span class="literal">None</span></span><br><span class="line">              </span><br><span class="line">    <span class="comment"># check today and DataFrame data to see if it need to update</span></span><br><span class="line">    <span class="comment"># 取得今天的時間</span></span><br><span class="line">    today_date = datetime.datetime.today()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> self.__df != <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># 取得最後一筆資料的日期</span></span><br><span class="line">        last_date = datetime.datetime.strptime( self.__df.index[<span class="number">-1</span>].astype(str), <span class="string">'%Y%m%d'</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># print('today is %s, last_date is %s' % (today_date.date(), last_date.date()))</span></span><br><span class="line">    </span><br><span class="line">        <span class="keyword">if</span> today_date.date() == last_date.date():</span><br><span class="line">            retval = self.__df.iloc[<span class="number">-1</span>]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            retval = self.update_from_web( today_date.date())</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        retval = self.update_from_web( today_date.date())</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> retval</span><br></pre></td></tr></table></figure>
+<p>簡單測試</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">GP = GoldPassbook()</span><br><span class="line"></span><br><span class="line">current_cost = GP.get_current_cost()</span><br><span class="line"></span><br><span class="line">print(<span class="string">'今日價格: 買入 %d , 賣出 %d'</span> % (current_cost[<span class="string">'Buy Cost'</span>], current_cost[<span class="string">'Sell Cost'</span>]))</span><br></pre></td></tr></table></figure>
+<p>輸出結果</p>
 <blockquote>
-<p>因為是使用 local 的 MongoDB, 所以沒帶入 host 參數 (預設是 localhost)<br>如果不需要登入, 就不用帶入 username 和 password<br>如果不連線 MongoDB, 就只要簡單的 <code>GP = GoldPassbook()</code> 但資料就不會被記錄下來</p>
+<p>No MongoDB connected<br>process : 2020-06-30 …今日價格: 買入 1662 , 賣出 1685</p>
 </blockquote>
-<p>再來先匯入一些基本的資料</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GP.update_from_csv( <span class="string">'GoldPassbook_2019.csv'</span>)</span><br><span class="line">GP.update_from_csv( <span class="string">'GoldPassbook_2020.csv'</span>)</span><br></pre></td></tr></table></figure>
-<p>然後再讓它自動更新不足的資料</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> GP.update() == <span class="literal">True</span>:</span><br><span class="line">    GP.save_db()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'MongoDB up to date'</span>)</span><br></pre></td></tr></table></figure>
-<p>最後取得 DataFrame 來做處理</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gp_df = GP.get_df()</span><br><span class="line"></span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line">gp_df.plot(figsize=(<span class="number">20</span>,<span class="number">10</span>))</span><br><span class="line">print(<span class="string">'最新金價 (%s) : 買入 %d , 賣出 %d'</span> % (gp_df.index[<span class="number">-1</span>], gp_df.iloc[<span class="number">-1</span>][<span class="string">'Buy Cost'</span>], gp_df.iloc[<span class="number">-1</span>][<span class="string">'Sell Cost'</span>]))</span><br></pre></td></tr></table></figure>
-<p>輸出的結果大致如下</p>
-<p><img src="https://res.cloudinary.com/lancewu/image/upload/v1592815363/GoldPassbook/20200622_goldpassbook_losueq.png" alt></p>
 
     </div>
 
@@ -264,13 +255,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/06/15/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E4%BA%94-update-from-web/" rel="prev" title="python練習題: GoldPassbook (五) update from web">
-      <i class="fa fa-chevron-left"></i> python練習題: GoldPassbook (五) update from web
+    <a href="/2020/06/22/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E5%85%AD-%E6%B8%AC%E8%A9%A6/" rel="prev" title="python練習題: GoldPassbook (六) 測試">
+      <i class="fa fa-chevron-left"></i> python練習題: GoldPassbook (六) 測試
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/06/30/python%E7%B7%B4%E7%BF%92%E9%A1%8C-GoldPassbook-%E4%B8%83-Get-current-cost/" rel="next" title="python練習題: GoldPassbook (七) Get current cost">
-      python練習題: GoldPassbook (七) Get current cost <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -527,7 +515,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'lancewu-tw.github.io',
       owner       : 'lancewu-tw',
       admin       : ['lancewu-tw'],
-      id          : '6b6804ee1b4664c891d8adf1d252414a',
+      id          : 'f5181c5e5392648444556b9a9da3f705',
         language: 'zh-TW',
       distractionFreeMode: true
     });
